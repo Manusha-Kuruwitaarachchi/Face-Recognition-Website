@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #333;
+            margin-top: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        button {
+            font-size: 16px;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #start-btn {
+            background-color: #007bff; /* Blue color */
+        }
+        #start-btn:hover {
+            background-color: #0056b3;
+        }
+        #stop-btn {
+            background-color: #dc3545; /* Red color */
+        }
+        #stop-btn:hover {
+            background-color: #c82333;
+        }
+        img {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Face Recognition</h1>
+        <button id="start-btn">Start Recognition</button>
+        <button id="stop-btn">Stop Recognition</button>
+        <div id="video-container">
+            <img id="video" src="" width="640" height="480" />
+        </div>
+    </div>
+
+    <script>
+        const videoElement = document.getElementById('video');
+
+        function getCacheBustingURL() {
+            const timestamp = new Date().getTime();
+            return `/video_feed?cache_buster=${timestamp}`;
+        }
+
+        document.getElementById('start-btn').addEventListener('click', function() {
+            fetch('/start_recognition', {method: 'POST'})
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "Recognition process started") {
+                        // Force reload video feed
+                        videoElement.src = getCacheBustingURL();
+                    }
+                });
+        });
+
+        document.getElementById('stop-btn').addEventListener('click', function() {
+            fetch('/stop_recognition', {method: 'POST'})
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "Recognition process stopped") {
+                        // Clear the video feed
+                        videoElement.src = "";
+                    }
+                });
+        });
+    </script>
+</body>
+</html>
